@@ -36,7 +36,13 @@ class Migration(migrations.Migration):
                 ('subscription_id', models.CharField(blank=True, max_length=255, null=True)),
                 ('plan', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='billing.plan')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-            ],
+            ]
+        ),
+    ]
+
+    perations = [
+        migrations.AlterUniqueTogether(
+            name='Subscription',
             unique_together={('user', 'plan')},
         ),
     ]
