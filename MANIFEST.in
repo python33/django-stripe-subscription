@@ -1,0 +1,3 @@
+include README.rst
+recursive-include stripe_subscription/static *
+recursive-include stripe_subscription/templates *
