@@ -22,6 +22,7 @@ class Migration(migrations.Migration):
                 ('price', models.DecimalField(decimal_places=2, max_digits=10, unique=True)),
                 ('recurring_interval', models.CharField(choices=[('week', 'Week'), ('month', 'Month'), ('year', 'Year')], default='year', max_length=255)),
                 ('product_id', models.CharField(blank=True, max_length=255, null=True)),
+                ('price_id', models.CharField(blank=True, max_length=255, null=True)),
                 ('published', models.BooleanField(default=True)),
             ],
         ),
@@ -34,7 +35,7 @@ class Migration(migrations.Migration):
                 ('updated_at', models.DateTimeField(auto_now=True, null=True)),
                 ('customer_id', models.CharField(blank=True, max_length=255, null=True)),
                 ('subscription_id', models.CharField(blank=True, max_length=255, null=True)),
-                ('plan', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='billing.plan')),
+                ('plan', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='stripe_subscription.plan')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ]
         ),
