@@ -29,7 +29,7 @@ class Plan(models.Model):
             max_length=255)
     product_id = models.CharField(max_length=255, null=True, blank=True)
     price_id = models.CharField(max_length=255, null=True, blank=True)
-    published = models.BooleanField(defalt=True)
+    published = models.BooleanField(default=True)
 
     objects = PlanManager()
 
