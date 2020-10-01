@@ -17,7 +17,7 @@ def session(request):
         return JsonResponse({
             "status": "ok",
             "session": {
-                "csrf_token": get_token(),
+                "csrf_token": get_token(request),
                 "user": request.user.email,
                 "plans": [
                     {'id': p.id, 'title': p.title, 'price': p.price}

@@ -42,6 +42,7 @@
   {
     var formData = new FormData();
 
+    formData.append('csrfmiddlewaretoken', this.session.csrf_token);
     formData.append('stripe_token', stripeToken);
     formData.append('plan', plan_id);
 
