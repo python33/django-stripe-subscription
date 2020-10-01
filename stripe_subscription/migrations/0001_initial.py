@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('title', models.CharField(max_length=255)),
-                ('price', models.DecimalField(decimal_places=2, max_digits=10), unique=True),
+                ('price', models.DecimalField(decimal_places=2, max_digits=10, unique=True)),
                 ('recurring_interval', models.CharField(choices=[('week', 'Week'), ('month', 'Month'), ('year', 'Year')], default='year', max_length=255)),
                 ('product_id', models.CharField(blank=True, max_length=255, null=True)),
                 ('published', models.BooleanField(default=True)),
