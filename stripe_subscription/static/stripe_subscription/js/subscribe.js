@@ -61,7 +61,7 @@
           }
         });
       })
-      .error(function (error) {
+      .catch(function (error) {
         on_error(error);
         console.error(error);
       });
