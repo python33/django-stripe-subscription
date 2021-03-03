@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from django.conf import settings
 
 import stripe
@@ -42,3 +44,13 @@ def update_price_on_stripe(plan):
         plan.price_id,
         unit_amount=int(plan.price * 100),
         recurring={"interval": plan.recurring_interval})
+
+
+def get_trial_end(days=3):
+    """
+    Returns trial end timestamp.
+    :param days: Trial period
+    :returns int: Trial end timestamp
+    """
+    trial_end = datetime.now() + timedelta(days=days)
+    return int(trial_end.timestamp())

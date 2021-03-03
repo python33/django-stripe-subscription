@@ -78,7 +78,8 @@ class Subscription(models.Model):
                 customer=obj.customer_id,
                 items=[
                     {"price": plan.price_id}
-                ])
+                ],
+                trial_end=utils.get_trial_end())
 
             obj.subscription_id = sub.id
             obj.save()
