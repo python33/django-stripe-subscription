@@ -57,8 +57,6 @@ class Subscription(models.Model):
             obj = cls(user=user, plan=plan)
 
         with transaction.atomic():
-            token = stripe.Token.retrieve(token)
-
             if not obj.customer_id:
                 customer = stripe.Customer.create(
                         email=user.email,
@@ -66,13 +64,19 @@ class Subscription(models.Model):
 
                 obj.customer_id = customer.id
 
-            source = stripe.Source.create(
-                type=token.type,
-                token=token.id)
+            if token.startswith('tok_'):
+                token = stripe.Token.retrieve(token)
 
-            stripe.Customer.create_source(
-                obj.customer_id,
-                source=source.id)
+                source = stripe.Source.create(
+                    type=token.type,
+                    token=token.id)
+
+                stripe.Customer.create_source(
+                    obj.customer_id,
+                    source=source.id)
+            elif token.startswith('pm_'):
+                pm = stripe.PaymentMethod.retrieve(token)
+                stripe.PaymentMethod.attach(pm.id, customer=obj.customer_id)
 
             sub = stripe.Subscription.create(
                 customer=obj.customer_id,
