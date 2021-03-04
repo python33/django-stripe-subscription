@@ -64,6 +64,13 @@ class Subscription(models.Model):
 
                 obj.customer_id = customer.id
 
+            kwargs = dict(
+                    customer=obj.customer_id,
+                    items=[
+                        {"price": plan.price_id}
+                    ],
+                    trial_end=utils.get_trial_end())
+                
             if token.startswith('tok_'):
                 token = stripe.Token.retrieve(token)
 
@@ -77,13 +84,9 @@ class Subscription(models.Model):
             elif token.startswith('pm_'):
                 pm = stripe.PaymentMethod.retrieve(token)
                 stripe.PaymentMethod.attach(pm.id, customer=obj.customer_id)
+                kwargs['default_payment_method'] = pm.id
 
-            sub = stripe.Subscription.create(
-                customer=obj.customer_id,
-                items=[
-                    {"price": plan.price_id}
-                ],
-                trial_end=utils.get_trial_end())
+            sub = stripe.Subscription.create(**kwargs)
 
             obj.subscription_id = sub.id
             obj.save()
