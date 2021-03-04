@@ -13,7 +13,7 @@ class SubscribeForm(forms.Form):
     def clean_stripe_token(self):
         data = self.cleaned_data['stripe_token']
 
-        if not re.match('tok_[0-9a-zA-Z]+', data):
+        if not re.match('(tok|pm)_[0-9a-zA-Z]+', data):
             raise ValidationError('Token format validation failed')
 
         return data
