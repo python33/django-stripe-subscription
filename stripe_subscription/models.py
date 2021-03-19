@@ -22,14 +22,21 @@ class Plan(models.Model):
         ('month', 'Month'),
         ('year', 'Year')
     )
+
+    # General
     title = models.CharField(max_length=255)
+    published = models.BooleanField(default=True)
+
+    # Payment details
     price = models.DecimalField(max_digits=10, decimal_places=2, unique=True)
     recurring_interval = models.CharField(
             choices=RECURRING_INTERVALS,
             max_length=255)
     product_id = models.CharField(max_length=255, null=True, blank=True)
     price_id = models.CharField(max_length=255, null=True, blank=True)
-    published = models.BooleanField(default=True)
+
+    # Deeplink
+    deep_link = models.URLField(max_length=500, null=True, blank=True)
 
     objects = PlanManager()
 
@@ -38,19 +45,34 @@ class Plan(models.Model):
 
 
 class Subscription(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
+
+    # Stripe details
     customer_id = models.CharField(max_length=255, null=True, blank=True)
     subscription_id = models.CharField(max_length=255, null=True, blank=True)
+
+    # Aditional parameters for deep link
+    quiz = models.TextField(null=True, blank=True)
 
     class Meta:
         unique_together = [('user', 'plan')]
 
     @classmethod
-    def create_from_token(cls, token, plan, user):
+    def create_from_token(cls, token, plan, user, quiz=None):
+        """
+        Creates new subscription from given token with plan for given user.
+        :param token: Paymnet source (starts with pm_)
+                      or payment token (starts with tok_)
+        :param plan: Selected plan (Plan object)
+        :param user: Subscriber
+        :param quiz: URL encoded quiz data (user selected options for depp link)
+        """
+
         try:
             obj = cls.objects.get(user=user, plan=plan)
         except cls.DoesNotExist:
@@ -70,7 +92,7 @@ class Subscription(models.Model):
                         {"price": plan.price_id}
                     ],
                     trial_end=utils.get_trial_end())
-                
+
             if token.startswith('tok_'):
                 token = stripe.Token.retrieve(token)
 
@@ -87,11 +109,36 @@ class Subscription(models.Model):
                 kwargs['default_payment_method'] = pm.id
 
             sub = stripe.Subscription.create(**kwargs)
-
             obj.subscription_id = sub.id
+
+            if quiz:
+                obj.quiz = quiz
+
             obj.save()
 
         return obj
+
+    @property
+    def deep_link(self):
+        """
+        Returns application deep link (user quiz data will be appended to plan.deep_link).
+        """
+        plan = self.plan
+
+        if not plan.deep_link:
+            return None
+
+        parts = [plan.deep_link]
+
+        if self.quiz:
+            parts.append(self.quiz)
+
+        glue = '?'
+
+        if glue in plan.deep_link:
+            glue = '&'
+
+        return glue.join(parts)
 
     def __str__(self):
         return "<Subscription: {}>".format(self.subscription_id)
