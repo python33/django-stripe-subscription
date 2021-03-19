@@ -41,14 +41,19 @@ def subscribe(request):
         if form.is_valid():
             token = form.cleaned_data['stripe_token']
             plan = form.cleaned_data['plan']
+            quiz = form.cleaned_data['quiz']
 
             sub = Subscription.create_from_token(
                     token,
                     plan,
-                    request.user)
+                    request.user,
+                    quiz)
 
             if sub:
-                return JsonResponse({"status": "ok"})
+                return JsonResponse({
+                    "status": "ok",
+                    "deep_link": sub.deep_link
+                })
         else:
             return JsonResponse(
                     {"status": "error", "errors": form.errors},

@@ -36,10 +36,11 @@
    * Creates subscription via API call using stripe token.
    * @param {String} stripeToken - Stripe token (f.e. "tok_.....")
    * @param {Number} plan_id - Subscription plan id (list of plans returned from session api)
+   * @param {String} quiz - URL encoded list of user selected options required for deeplink
    * @param {Function} on_success - Success handler.
    * @param {function} on_error - Error handler.
    */
-  Subscription.prototype.subscribe = function (stripeToken, plan_id, on_success, on_error)
+  Subscription.prototype.subscribe = function (stripeToken, plan_id, quiz, on_success, on_error)
   {
     var formData = new FormData();
     var self = this;
@@ -47,6 +48,7 @@
     formData.append('csrfmiddlewaretoken', this.session.csrf_token);
     formData.append('stripe_token', stripeToken);
     formData.append('plan', plan_id);
+    formData.append('quiz', quiz);
 
     fetch(self.url_prefix + '/subscribe/', {
         method: "POST",

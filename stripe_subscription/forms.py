@@ -9,6 +9,7 @@ from .models import Plan
 class SubscribeForm(forms.Form):
     stripe_token = forms.CharField(max_length=255)
     plan = forms.ModelChoiceField(queryset=Plan.objects.list_published())
+    quiz = forms.CharField(max_length=500)
 
     def clean_stripe_token(self):
         data = self.cleaned_data['stripe_token']
