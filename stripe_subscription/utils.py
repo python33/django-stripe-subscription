@@ -42,8 +42,7 @@ def update_price_on_stripe(plan):
     """
     stripe.Price.modify(
         plan.price_id,
-        unit_amount=int(plan.price * 100),
-        recurring={"interval": plan.recurring_interval})
+        active=plan.published)
 
 
 def get_trial_end(days=3):
