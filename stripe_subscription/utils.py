@@ -51,5 +51,5 @@ def get_trial_end(days=3):
     :param days: Trial period
     :returns int: Trial end timestamp
     """
-    trial_end = datetime.now() + timedelta(minutes=10)
+    trial_end = datetime.now() + timedelta(days=days)
     return int(trial_end.timestamp())
