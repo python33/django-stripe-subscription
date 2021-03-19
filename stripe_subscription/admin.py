@@ -15,3 +15,25 @@ class PlanAdmin(admin.ModelAdmin):
             readonly_fields += ['price', 'recurring_interval']
 
         return readonly_fields
+
+
+@admin.register(models.Subscription)
+class SubscriptionAdmin(admin.ModelAdmin):
+    readonly_fields = (
+            'created_at', 'updated_at', 'user',
+            'plan', 'customer_id', 'subscription_id', 'quiz')
+    list_display = ('user', 'created_at', 'updated_at',
+                    'customer_id', 'subscription_id', 'is_active')
+    list_filter = ('is_active', 'created_at')
+    fieldsets = (
+        (None, {
+            "fields": ('user', 'is_active', 'created_at', 'updated_at')
+        }),
+        ('Stripe', {
+            "fields": ('plan', 'customer_id', 'subscription_id')
+        }),
+        ('Quiz', {
+            "fields": ('quiz',)
+        })
+    )
+
