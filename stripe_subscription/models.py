@@ -26,6 +26,7 @@ class Plan(models.Model):
     # General
     title = models.CharField(max_length=255)
     published = models.BooleanField(default=True)
+    trial_days = models.IntegerField(default=3)
 
     # Payment details
     price = models.DecimalField(max_digits=10, decimal_places=2, unique=True)
@@ -91,7 +92,7 @@ class Subscription(models.Model):
                     items=[
                         {"price": plan.price_id}
                     ],
-                    trial_end=utils.get_trial_end())
+                    trial_end=utils.get_trial_end(plan.trial_days))
 
             if token.startswith('tok_'):
                 token = stripe.Token.retrieve(token)
