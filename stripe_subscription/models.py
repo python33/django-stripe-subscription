@@ -29,7 +29,7 @@ class Plan(models.Model):
     trial_days = models.IntegerField(default=3)
 
     # Payment details
-    price = models.DecimalField(max_digits=10, decimal_places=2, unique=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
     recurring_interval = models.CharField(
             choices=RECURRING_INTERVALS,
             max_length=255)
